@@ -206,6 +206,8 @@ footer {
 
 .bundle-info strong { color: var(--text); }
 
+.bundle-info .warning { color: var(--danger); }
+
 .bundle-actions {
   display: flex;
   gap: 8px;

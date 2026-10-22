@@ -26,6 +26,8 @@ const STRINGS = {
     bundleCopy: 'Copy bundle',
     bundleClear: 'Clear',
     bundleEmpty: 'collect several pages for one AI prompt.',
+    bundleNeedsReload: 'reload the extension in chrome://extensions to turn it on.',
+    saveFailed: 'Not saved',
     added: 'Added ✓',
     updated: 'Updated ✓',
     bundleSummary: (count, tokens) => `${count} ${count > 1 ? 'pages' : 'page'} · ≈ ${tokens} tokens`,
@@ -67,6 +69,8 @@ const STRINGS = {
     bundleCopy: 'Copier le lot',
     bundleClear: 'Vider',
     bundleEmpty: 'collectez plusieurs pages pour une IA.',
+    bundleNeedsReload: "rechargez l'extension dans chrome://extensions pour l'activer.",
+    saveFailed: 'Non enregistré',
     added: 'Ajoutée ✓',
     updated: 'Mise à jour ✓',
     bundleSummary: (count, tokens) => `${count} page${count > 1 ? 's' : ''} · ≈ ${tokens} tokens`,
@@ -100,6 +104,9 @@ const bundleAddButton = document.getElementById('bundle-add');
 const bundleCopyButton = document.getElementById('bundle-copy');
 const bundleClearButton = document.getElementById('bundle-clear');
 const langButtons = document.querySelectorAll('[data-lang]');
+// Missing when the extension was updated on disk without being reloaded: Chrome only grants
+// the permissions of a new manifest after a reload.
+const storage = chrome.storage && chrome.storage.local;
 
 let lang = loadLanguage();
 let t = STRINGS[lang];
@@ -184,6 +191,12 @@ function forAI(pages) {
 }
 
 function renderBundle() {
+  bundleSummary.classList.toggle('warning', !storage);
+  if (!storage) {
+    bundleSummary.textContent = t.bundleNeedsReload;
+    bundleAddButton.disabled = bundleCopyButton.disabled = bundleClearButton.disabled = true;
+    return;
+  }
   const characters = bundle.reduce((sum, page) => sum + page.markdown.length, 0);
   bundleSummary.textContent = bundle.length
     ? t.bundleSummary(bundle.length, number.format(Math.round(characters / 4)))
@@ -193,14 +206,19 @@ function renderBundle() {
 }
 
 async function loadBundle() {
-  const stored = await chrome.storage.local.get(BUNDLE_KEY);
-  bundle = stored[BUNDLE_KEY] || [];
+  if (!storage) return;
+  bundle = (await storage.get(BUNDLE_KEY))[BUNDLE_KEY] || [];
   renderBundle();
 }
 
-function saveBundle() {
+// Applies `change` to the stored bundle (not the copy in memory) and only shows the result once
+// it is saved, so the popup never displays pages that would be gone when it reopens.
+async function updateBundle(change) {
+  const pages = (await storage.get(BUNDLE_KEY))[BUNDLE_KEY] || [];
+  const updated = change(pages);
+  await storage.set({ [BUNDLE_KEY]: updated });
+  bundle = updated;
   renderBundle();
-  return chrome.storage.local.set({ [BUNDLE_KEY]: bundle });
 }
 
 function explain(error, tab) {
@@ -300,19 +318,30 @@ copyAIButton.addEventListener('click', () => copyText(copyAIButton, forAI([curre
 bundleCopyButton.addEventListener('click', () => copyText(bundleCopyButton, forAI(bundle)));
 
 bundleAddButton.addEventListener('click', async () => {
-  // Re-adding a page replaces it; selections pile up since each one can be a different excerpt.
-  const index = current.scope === 'selection'
-    ? -1
-    : bundle.findIndex((page) => page.url === current.url && page.scope === current.scope);
-  if (index >= 0) bundle[index] = { ...current };
-  else bundle.push({ ...current });
-  await saveBundle();
-  flash(bundleAddButton, index >= 0 ? t.updated : t.added);
+  let replaced = false;
+  try {
+    await updateBundle((pages) => {
+      // Re-adding a page replaces it; selections pile up since each one can be a different excerpt.
+      const index = current.scope === 'selection'
+        ? -1
+        : pages.findIndex((page) => page.url === current.url && page.scope === current.scope);
+      replaced = index >= 0;
+      if (replaced) pages[index] = { ...current };
+      else pages.push({ ...current });
+      return pages;
+    });
+    flash(bundleAddButton, replaced ? t.updated : t.added);
+  } catch {
+    flash(bundleAddButton, t.saveFailed);
+  }
 });
 
 bundleClearButton.addEventListener('click', async () => {
-  bundle = [];
-  await saveBundle();
+  try {
+    await updateBundle(() => []);
+  } catch {
+    flash(bundleClearButton, t.saveFailed);
+  }
 });
 
 downloadButton.addEventListener('click', () => {
