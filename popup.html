@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Page → Markdown</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="icons/icon32.png" alt="" width="20" height="20">
+    <h1>Page → Markdown</h1>
+    <div class="lang" role="group" aria-label="Language / Langue">
+      <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <form id="options">
+    <span class="label" id="scope-label" data-i18n="scopeLabel">Area</span>
+    <div class="seg" role="radiogroup" aria-labelledby="scope-label">
+      <label><input type="radio" name="scope" value="main"><span data-i18n="scopeMain">Main content</span></label>
+      <label><input type="radio" name="scope" value="page"><span data-i18n="scopePage">Whole page</span></label>
+      <label><input type="radio" name="scope" value="selection"><span data-i18n="scopeSelection">Selection</span></label>
+    </div>
+
+    <span class="label" data-i18n="includeLabel">Include</span>
+    <div class="checks">
+      <label data-i18n-title="metaHint"><input type="checkbox" name="meta"> <span data-i18n="meta">Metadata</span></label>
+      <label><input type="checkbox" name="links"> <span data-i18n="links">Links</span></label>
+      <label><input type="checkbox" name="images"> <span data-i18n="images">Images</span></label>
+    </div>
+  </form>
+
+  <p id="status" class="status" role="status"></p>
+  <pre id="output" class="output" tabindex="0"></pre>
+
+  <footer>
+    <button id="copy" class="primary" type="button" data-i18n="copy" disabled>Copy</button>
+    <button id="copy-ai" type="button" data-i18n="copyAI" data-i18n-title="copyAIHint" disabled>Copy for AI</button>
+    <button id="download" type="button" data-i18n="download" disabled>Download .md</button>
+  </footer>
+
+  <section class="bundle" aria-labelledby="bundle-title">
+    <p class="bundle-info"><strong id="bundle-title" data-i18n="bundleTitle">Bundle</strong> · <span id="bundle-summary"></span></p>
+    <div class="bundle-actions">
+      <button id="bundle-add" type="button" data-i18n="bundleAdd" disabled>+ Add page</button>
+      <button id="bundle-copy" type="button" data-i18n="bundleCopy" disabled>Copy bundle</button>
+      <button id="bundle-clear" type="button" data-i18n="bundleClear" disabled>Clear</button>
+    </div>
+  </section>
+
+  <script src="extractor.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

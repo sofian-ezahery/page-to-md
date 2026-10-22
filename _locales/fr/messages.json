@@ -1,0 +1,6 @@
+{
+  "extName": { "message": "Page → Markdown" },
+  "extDescription": { "message": "Convertit n'importe quelle page web en Markdown propre, prêt pour ChatGPT, Claude ou vos notes." },
+  "actionTitle": { "message": "Extraire la page en Markdown" },
+  "commandDescription": { "message": "Ouvrir Page → Markdown" }
+}

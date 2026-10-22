@@ -1,0 +1,242 @@
+:root {
+  --bg: #ffffff;
+  --surface: #f4f5f7;
+  --seg-active: #ffffff;
+  --border: #e1e3e8;
+  --text: #1c1e24;
+  --muted: #6b7080;
+  --accent: #4f46e5;
+  --accent-text: #ffffff;
+  --danger: #c2410c;
+  --md-heading: #4338ca;
+  --md-meta: #6b7080;
+  --md-url: #0f766e;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17181c;
+    --surface: #202228;
+    --seg-active: #33363f;
+    --border: #2f323a;
+    --text: #e8e9ed;
+    --muted: #9a9fad;
+    --accent: #818cf8;
+    --accent-text: #11121a;
+    --danger: #fb923c;
+    --md-heading: #a5b4fc;
+    --md-meta: #9a9fad;
+    --md-url: #5eead4;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  width: 440px;
+  background: var(--bg);
+  color: var(--text);
+  font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px 8px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.lang {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+  padding: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+}
+
+.lang button {
+  flex: none;
+  padding: 2px 8px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.lang button[aria-pressed="true"] {
+  background: var(--seg-active);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+}
+
+.lang button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+form {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 4px 14px 12px;
+}
+
+.label { color: var(--muted); }
+
+.seg {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.seg label {
+  position: relative;
+  flex: 1;
+}
+
+.seg input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.seg span {
+  display: block;
+  padding: 5px 6px;
+  border-radius: 6px;
+  color: var(--muted);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.seg input:checked + span {
+  background: var(--seg-active);
+  color: var(--text);
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+}
+
+.seg input:focus-visible + span {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.checks {
+  display: flex;
+  gap: 14px;
+}
+
+.checks label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.status {
+  min-height: 34px;
+  margin: 0;
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.status.error { color: var(--danger); }
+
+.output {
+  height: 260px;
+  margin: 0 14px;
+  padding: 10px;
+  overflow: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: 11.5px/1.5 ui-monospace, "Cascadia Code", Consolas, monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.output:empty { display: none; }
+
+.h { color: var(--md-heading); font-weight: 600; }
+.fm { color: var(--md-meta); }
+.url { color: var(--md-url); }
+
+footer {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.bundle {
+  padding: 10px 14px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.bundle-info {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.bundle-info strong { color: var(--text); }
+
+.bundle-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.bundle-actions button {
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+button {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+button:not(:disabled):hover { filter: brightness(1.06); }
